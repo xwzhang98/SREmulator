@@ -19,7 +19,6 @@ from .models import (
     narrow_like,
     resample,
     lag2eul,
-    D,
     G,
 )
 from .utils import import_attr, load_model_state_dict, plt_slices, plt_power, score
@@ -809,7 +808,6 @@ def init_weights(m):
         ),
     ):
         if m.affine:
-            # NOTE: dispersion from DCGAN, why?
             m.weight.data.normal_(1.0, args.init_weight_std)
             m.bias.data.fill_(0)
 
