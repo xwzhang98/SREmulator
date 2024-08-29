@@ -99,10 +99,6 @@ def superres_with_addon(
     noise.unsqueeze_(0)
     noise = noise.to(device)
 
-    print("lr_field.shape", lr_field.shape)
-    print("style.shape", style.shape)
-    print("noise.shape", noise.shape)
-    print("noise_style.shape", noise_style.shape)
     with torch.no_grad():
         sr_out = G(lr_field, style)
         print(sr_out.shape)
@@ -110,68 +106,12 @@ def superres_with_addon(
         sr_field = model(sr_out, style, noise)
 
     sr_field.squeeze_(0)
-    print("sr_field.shape", sr_field.shape)
-    if style > 1:
-        style = style / 1000
-    print(style)
-
     sr_disp = dis(sr_field[:3, :, :, :].cpu(), a=style[0].cpu().numpy(), undo=True)
     sr_vel = vel(sr_field[3:, :, :, :].cpu(), a=style[0].cpu().numpy(), undo=True)
     sr_disp = narrow_like(sr_disp, tgt_size)
     sr_vel = narrow_like(sr_vel, tgt_size)
-    print("sr_disp.shape", sr_disp.shape)
-    print("sr_vel.shape", sr_vel.shape)
 
     return sr_disp, sr_vel
-
-
-
-def apply_emulator(
-    input_disp, input_vel, style, noise_disp, noise_vel, noise_style, tgt_size, model, device
-):
-
-    input_disp = dis(input_disp, a=style)
-    input_vel = vel(input_vel, a=style)
-
-    noise_disp = dis(noise_disp, a=noise_style)
-    noise_vel = vel(noise_vel, a=noise_style)
-
-    input_field = np.concatenate([input_disp, input_vel], axis=0)
-    input_field = torch.from_numpy(input_field).float()
-    input_field.unsqueeze_(0)
-    input_field = input_field.to(device)
-
-    style = torch.from_numpy(style).float()
-    style.unsqueeze_(0)
-    style = style.view(1, -1)
-    style = style.to(device)
-
-    noise = np.concatenate([noise_disp, noise_vel], axis=0)
-    noise = torch.from_numpy(noise).float()
-    noise.unsqueeze_(0)
-    noise = noise.to(device)
-
-    print("input field.shape", input_field.shape)
-    print("style shape", style.shape)
-    print("noise shape", noise.shape)
-    print("noise style shape", noise_style.shape)
-    with torch.no_grad():
-        output_field = model(input_field, style, noise)
-
-    output_field.squeeze_(0)
-    print("output_field.shape", output_field.shape)
-    # if style > 1:
-    #     style = style / 1000
-    # print(style)
-
-    out_disp = dis(output_field[:3, :, :, :].cpu(), a=style[0].cpu().numpy(), undo=True)
-    out_vel = vel(output_field[3:, :, :, :].cpu(), a=style[0].cpu().numpy(), undo=True)
-    out_disp = narrow_like(out_disp, tgt_size)
-    out_vel = narrow_like(out_vel, tgt_size)
-    print("out_disp.shape", out_disp.shape)
-    print("out_vel.shape", out_vel.shape)
-
-    return out_disp, out_vel
 
 
 import numpy as np

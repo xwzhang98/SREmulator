@@ -312,7 +312,7 @@ def gpu_worker(local_rank, node, args):
 
     generator = G(6, 6, 1, 8)
     state = torch.load(
-        "/hildafs/home/xzhangn/xzhangn/emulator_sr/5-training/test_pretrained/GAN_state/state_710.pt",
+        "state.pt",
         map_location=device,
     )
     generator.load_state_dict(state["model"])

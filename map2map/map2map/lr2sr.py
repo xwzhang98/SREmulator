@@ -1,7 +1,7 @@
 import chunk
 import numpy as np
 import torch
-from .models.simple_unet import UNetModel as Unet
+from .models.unet import UNetModel as Unet
 from .models.discriminator import Discriminator
 from .models.styled_srsgan import G
 from .utils.utils_lr2sr import *
@@ -15,9 +15,7 @@ def lr2sr(args):
     device = "cuda"
 
     style = np.load(args.style_path)
-    noise_style = np.load(
-        "/hildafs/home/xzhangn/xzhangn/emulator_sr/4-data/2-0/noise/set0/PART_099/style.npy"
-    )
+    noise_style = np.load("style.npy")
 
     lr_disp = np.load(args.lr_disp_input)
     lr_vel = np.load(args.lr_vel_input)
@@ -29,14 +27,12 @@ def lr2sr(args):
     size = np.asarray(size)
     ndim = len(size)
 
-    # chunk_size = size // args.nsplit
     chunk_size = np.asarray([16, 16, 16])
     crop = np.broadcast_to(chunk_size, size.shape)
     reps = np.rint(size / crop).astype(np.int64)
     tot_reps = int(np.prod(reps))
     pad = args.padding
     pad = np.broadcast_to(pad, (ndim, 2))
-
     noise_pad = args.noise_padding
     noise_pad = np.broadcast_to(noise_pad, (ndim, 2))
 
@@ -44,13 +40,9 @@ def lr2sr(args):
     tgt_chunk = np.broadcast_to(tgt_size, size.shape)
 
     noise_size = np.asarray(noise_disp.shape[1:])
-
-    # noise_chunk_size = noise_size // args.nsplit
     noise_chunk_size = crop[0] * upsample_fac
     noise_crop = np.broadcast_to(noise_chunk_size, noise_size.shape)
-    # noise_reps = noise_size // noise_crop
     noise_reps = np.rint(noise_size / noise_crop).astype(np.int64)
-
     noise_pad = np.broadcast_to(noise_pad, (ndim, 2))
 
     Ng_sr = size[0] * upsample_fac
@@ -73,7 +65,7 @@ def lr2sr(args):
 
     generator = G(6, 6, 1, 8)
     state = torch.load(
-        "/hildafs/home/xzhangn/xzhangn/emulator_sr/5-training/test_pretrained/GAN_state/state_710.pt",
+        "state.pt",
         map_location=device,
     )
     G_state = state["model"]
@@ -84,20 +76,11 @@ def lr2sr(args):
     generator.to(device)
 
     for idx in range(0, tot_reps):
-        print(crop, pad)
         lr_disp_chunk = cropfield(lr_disp, idx, reps, crop, pad)
         lr_vel_chunk = cropfield(lr_vel, idx, reps, crop, pad)
-        print(idx, noise_reps, noise_crop, noise_pad)
         noise_disp_chunk = cropfield(noise_disp, idx, noise_reps, noise_crop, noise_pad)
         noise_vel_chunk = cropfield(noise_vel, idx, noise_reps, noise_crop, noise_pad)
-        print(
-            lr_disp_chunk.shape,
-            lr_vel_chunk.shape,
-            noise_disp_chunk.shape,
-            noise_vel_chunk.shape,
-        )
         style = style.reshape(1, 1)
-        print(style, noise_style)
         print("chunk {} / {}".format(idx + 1, tot_reps))
         sr_disp_chunk, sr_vel_chunk = superres_with_addon(
             lr_disp_chunk,
@@ -160,12 +143,6 @@ def lr2sr(args):
 
     if path[-1] != "/":
         path += "/"
-    # np.save(path + 'disp', disp_field)
-    # np.save(path + 'vel', vel_field)
-    # np.save(path + 'pos', sr_pos)
-
-    # if args.require_id:
-    #     np.save(path + 'id', IDs)
 
     dest = BigFile(path, create=1)
 
