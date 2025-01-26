@@ -6,7 +6,6 @@ from pprint import pprint
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 import torch.distributed as dist
 from torch.multiprocessing import spawn
@@ -17,9 +16,7 @@ from .data import FieldDataset, DistFieldSampler
 from . import models
 from .models import (
     narrow_like,
-    resample,
-    lag2eul,
-    G,
+    lag2eul
 )
 from .utils import import_attr, load_model_state_dict, plt_slices, plt_power, score
 
@@ -309,18 +306,6 @@ def gpu_worker(local_rank, node, args):
         pprint(vars(args))
         sys.stdout.flush()
 
-    generator = G(6, 6, 1, 8)
-    state = torch.load(
-        "state.pt",
-        map_location=device,
-    )
-    generator.load_state_dict(state["model"])
-    del state
-    generator.to(device)
-    generator.eval()
-
-    discriminator = None
-
     # tf32 stuff on A100
     if not torch.backends.cuda.matmul.allow_tf32:
         torch.backends.cuda.matmul.allow_tf32 = True
@@ -343,10 +328,7 @@ def gpu_worker(local_rank, node, args):
             logger,
             device,
             args,
-            generator=generator,
         )
-
-        # prof.step()
 
         epoch_loss = train_loss
 
@@ -410,10 +392,10 @@ def train(
     logger,
     device,
     args,
-    generator=None,
 ):
     torch.cuda.reset_peak_memory_stats(device=device)
     eul_scale_factor = 2
+    LAMBDA = 3e-2
     rank = dist.get_rank()
     world_size = dist.get_world_size()
 
@@ -429,9 +411,6 @@ def train(
     if args.adv:
         adv_model.train()
     set_requires_grad(model, requires_grad=True)
-    if generator is not None:
-        generator.eval()
-        set_requires_grad(generator, requires_grad=False)
 
     epoch_loss = torch.zeros(100, dtype=torch.float32, device=device)
 
@@ -448,11 +427,9 @@ def train(
         target = target.to(device, non_blocking=True)
         style = style.to(device, non_blocking=True)
         noise = noise.to(device, non_blocking=True)
+        # without the SR generator, the input shape should be 128
 
-        with torch.no_grad():
-            sr_out = generator(input, style)
-            sr_out = narrow_like(sr_out, noise)
-        output = model(sr_out, style, noise)
+        output = model(input, style, noise)
 
         if i <= 1 and rank == 0:
             print("##### batch :", batch)
@@ -476,13 +453,14 @@ def train(
             print("target shape :", target.shape)
             print("narrowed shape :", output.shape)
             print("#####", flush=True)
-        if args.adv:
-            input = resample(input, scale_factor=args.scale_factor)
-            input = narrow_like(input, target)
 
         else:
             del input
         optimizer.zero_grad(set_to_none=True)
+
+
+        # WARNING
+        # The input and output has changed from 6 channels to 8 channels
 
         disp_lag_out, disp_lag_tgt = output[:, :3], target[:, :3]
         vel_lag_out, vel_lag_tgt = output[:, 3:], target[:, 3:]
@@ -557,7 +535,7 @@ def train(
             score_out = adv_model(output, style=style, cond=input)
             loss_adv = adv_criterion(score_out)
             epoch_loss[12] += loss_adv.detach()
-            total_loss += 3e-2 * loss_adv
+            total_loss += LAMBDA * loss_adv
         total_loss.backward()
         optimizer.step()
         if i + 1 != len(loader):
@@ -646,15 +624,8 @@ def train(
 
         epoch_making_plots_start.record()
         if (epoch + 1) % 1 == 0:
-            disp_sr_out = sr_out[:, :3].detach()
-            vel_sr_out = sr_out[:, 3:].detach()
 
             with torch.no_grad():
-                sr_eul = lag2eul(
-                    sr_out[:, :3],
-                    a=np.float64(style),
-                    eul_scale_factor=eul_scale_factor,
-                )[0]
                 disp_eul_out = lag2eul(
                     disp_lag_out,
                     a=np.float64(style),
@@ -667,28 +638,22 @@ def train(
                 )[0]
             try:
                 fig = plt_slices(
-                    disp_sr_out[-1],
                     disp_lag_out[-1],
                     disp_lag_tgt[-1],
                     disp_lag_out[-1] - disp_lag_tgt[-1],
-                    sr_eul[-1],
                     disp_eul_out[-1],
                     disp_eul_tgt[-1],
                     disp_eul_out[-1] - disp_eul_tgt[-1],
-                    vel_sr_out[-1],
                     vel_lag_out[-1],
                     vel_lag_tgt[-1],
                     vel_lag_out[-1] - vel_lag_tgt[-1],
                     title=[
-                        "ai3 disp",
                         "out disp",
                         "tgt disp",
                         "disp diff",
-                        "ai3 eul",
                         "out eul",
                         "tgt eul",
                         "eul diff",
-                        "ai3 vel",
                         "out vel",
                         "tgt vel",
                         "vel diff",
@@ -703,13 +668,10 @@ def train(
 
             try:
                 del (
-                    disp_sr_out,
                     disp_lag_out,
                     disp_lag_tgt,
                     disp_eul_out,
                     disp_eul_tgt,
-                    sr_eul,
-                    vel_sr_out,
                     vel_lag_out,
                     vel_lag_tgt,
                 )
@@ -731,14 +693,14 @@ def train(
             global_step=epoch + 1,
         )
         max_memory_alloc = torch.cuda.max_memory_allocated(device=device)
-        max_momory_reserved = torch.cuda.max_memory_reserved(device=device)
+        max_memory_reserved = torch.cuda.max_memory_reserved(device=device)
         max_memory_alloc = round(max_memory_alloc / (1024**3), 2)
-        max_momory_reserved = round(max_momory_reserved / (1024**3), 2)
+        max_memory_reserved = round(max_memory_reserved / (1024**3), 2)
         logger.add_scalars(
             "stat/mem/",
             {
                 "max_alloc": max_memory_alloc,
-                "max_reserved": max_momory_reserved,
+                "max_reserved": max_memory_reserved,
             },
             global_step=epoch + 1,
         )
