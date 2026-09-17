@@ -1,0 +1,102 @@
+#  Relevant files
+InitCondFile =  
+OutputDir = 
+# TreeCoolFile = /home1/07931/plach/MP-Gadget/examples/TREECOOL_fg_june11
+#OutputList=0.0625    , 0.06944444, 0.07638889, 0.08333333, 0.09027778,0.09722222, 0.10416667, 0.11111111, 0.11805556
+OutputList = 0.12499999976892129, 0.138772977057495, 0.15190389978014301, 0.16450212117454377, 0.17664882252471603, 0.18840642133371813, 0.19982425095818013, 0.21094219489015473, 0.2217931093540699, 0.23240448832960958, 0.24279965419604593, 0.25299862302242254, 0.263018750851733, 0.2728752293915806, 0.2825814563559123, 0.29214933479971195, 0.3015895161406543, 0.31091157913986117, 0.3201241927723015, 0.3292352370674007, 0.3382519077213947, 0.3471808040476179, 0.3560280026442024, 0.3647991217997121, 0.37349936928304395, 0.38213358734268216, 0.3907062951727941, 0.3992217229799071, 0.4076838373969594, 0.4160963639662727, 0.42446282433644433, 0.43278653399805733, 0.4410706443760359, 0.4493181313022795, 0.45753183433676536, 0.4657144520670543, 0.47386855645550496, 0.48199661180921416, 0.4901009708994432, 0.49818388780188183, 0.5062475313204001, 0.5142939781259076, 0.5223252360029899, 0.5303432330687886, 0.5383498351037274, 0.5463468374953063, 0.5543359813147258, 0.5623189545501537, 0.5702973899981362, 0.5782728699361263, 0.5862469375670591, 0.5942210883877715, 0.6021967794207622, 0.61017542969845, 0.6181584200681127, 0.6261471046117522, 0.6341427975416803, 0.6421467907143129, 0.6501603414254796, 0.6581846841468932, 0.6662210264258517, 0.6742705542917735, 0.6823344278116202, 0.6904137851160911, 0.6985097534760868, 0.7066234266051361, 0.7147558913107801, 0.7229082118446125, 0.73108143613497, 0.7392765992582903, 0.7474947193698092, 0.7557368024504365, 0.7640038394632764, 0.7722968096150539, 0.7806166768701563, 0.7889644022502029, 0.7973409265654844, 0.8057471863684678, 0.8141841060867101, 0.8226526004398742, 0.8311535784865303, 0.83968793797319, 0.8482565694967581, 0.8568603572621827, 0.8655001763523767, 0.8741768995396256, 0.8828913880066703, 0.8916444995373337, 0.9004370883301275, 0.9092699987445596, 0.9181440741778285, 0.9270601512075348, 0.9360190635251695, 0.9450216396065364, 0.954068704391078, 0.9631610792223159, 0.9722995823702081, 0.981485029294731, 0.9907182319565134, 1.0
+#OutputList =  0.125, 0.1338, 0.1427, 0.1515, 0.1604, 0.1692, 0.178, 0.1869, 0.1957, 0.2045, 0.2134, 0.2222, 0.2311, 0.2399, 0.2487, 0.2576, 0.2664, 0.2753, 0.2841, 0.2929, 0.3018, 0.3106, 0.3194, 0.3283, 0.3371, 0.346, 0.3548, 0.3636, 0.3725, 0.3813, 0.3902, 0.399, 0.4078, 0.4167, 0.4255, 0.4343, 0.4432, 0.452, 0.4609, 0.4697, 0.4785, 0.4874, 0.4962, 0.5051, 0.5139, 0.5227, 0.5316, 0.5404, 0.5492, 0.5581, 0.5669, 0.5758, 0.5846, 0.5934, 0.6023, 0.6111, 0.6199, 0.6288, 0.6376, 0.6465, 0.6553, 0.6641, 0.673, 0.6818, 0.6907, 0.6995, 0.7083, 0.7172, 0.726, 0.7348, 0.7437, 0.7525, 0.7614, 0.7702, 0.779, 0.7879, 0.7967, 0.8056, 0.8144, 0.8232, 0.8321, 0.8409, 0.8497, 0.8586, 0.8674, 0.8763, 0.8851, 0.8939, 0.9028, 0.9116, 0.9205, 0.9293, 0.9381, 0.947, 0.9558, 0.9646, 0.9735, 0.9823, 0.9912, 1.0 
+
+Nmesh = 128
+# CPU time -limit
+	
+TimeLimitCPU = 10000 #<10 mins
+
+# Code options
+# Characteristics of run
+
+TimeMax = 1
+
+Omega0 = 0.2814      # Total matter density  (at z=0)
+OmegaLambda = 0.7186      # Cosmological constant (at z=0)
+OmegaBaryon = 0.0464     # Baryon density        (at z=0)
+HubbleParam = 0.697      # Hubble paramater (may be used for power spec parameterization)
+
+CoolingOn = 0
+StarformationOn = 0
+BlackHoleOn = 0
+HydroOn = 0
+DensityIndependentSphOn = 1
+#StarformationCriterion = density,h2
+#RadiationOn = 1
+MassiveNuLinRespOn = 0
+WindOn = 0
+MetalReturnOn = 0
+#MetalCoolFile = /home1/07931/plach/MP-Gadget/examples/cooling_metal_UVB
+
+# Accuracy of time integration
+MaxSizeTimestep = 0.1
+MinSizeTimestep = 0.00
+
+SnapshotWithFOF = 1
+FOFHaloLinkingLength = 0.2
+FOFHaloMinLength = 32
+
+#  Further parameters of SPH
+#DensityKernelType = quintic
+
+#DensityContrastLimit = 100   # max contrast for hydro force calculation
+#DensityResolutionEta = 1.0  # for Cubic spline 1.0 = 33
+#MaxNumNgbDeviation = 2
+#ArtBulkViscConst = 0.75
+#InitGasTemp = 580.0        # always ignored if set to 0 
+#MinGasTemp = 5.0
+
+
+# Memory allocation
+
+#PartAllocFactor = 2.0
+
+# Softening lengths
+
+#MinGasHsmlFractional = 0.01
+
+#----------------------BH Stuff-------------------------
+#BlackHoleFeedbackFactor = 0.05
+#BlackHoleFeedbackRadius = 0.
+#BlackHoleFeedbackRadiusMaxPhys = 0.
+#BlackHoleFeedbackMethod = spline | mass
+#SeedBlackHoleMass = 5.0e-5
+#BlackHoleAccretionFactor = 100.0
+#BlackHoleNgbFactor = 2.0
+#BlackHoleEddingtonFactor = 3.0
+
+#MinFoFMassForNewSeed = 5
+#TimeBetweenSeedingSearch 1.05
+
+#----------------------SFR Stuff-------------------------
+
+#CritPhysDensity = 0       #  critical physical density for star formation in
+#  hydrogen number density in cm^(-3)
+
+#CritOverDensity = 57.7   #  overdensity threshold value
+
+#QuickLymanAlphaProbability  0 # Set to 1.0 to turn dense gas directly into stars.
+
+#MaxSfrTimescale = 1.5     # in internal time units
+
+
+#TempSupernova = 1.0e8   #  in Kelvin
+
+#TempClouds = 1000.0   #  in Kelvin
+#FactorSN = 0.1
+#FactorEVP = 1000.0
+
+#WindModel = ofjt10,decouple
+#WindEfficiency = 2.0
+#WindEnergyFraction = 1.0
+#WindSigma0 = 353.0 #km/s
+#WindSpeedFactor = 3.7
+
+#WindFreeTravelLength = 20
+#WindFreeTravelDensFac = 0.1
+

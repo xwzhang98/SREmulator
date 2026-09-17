@@ -1,0 +1,101 @@
+#  Relevant files
+InitCondFile =
+OutputDir = 
+# TreeCoolFile = /home1/07931/plach/MP-Gadget/examples/TREECOOL_fg_june11
+
+OutputList = 0.06262, 0.06496, 0.06899, 0.07031, 0.07035, 0.07046, 0.07121, 0.07643, 0.08043, 0.08675, 0.09672, 0.09721, 0.09997, 0.11063, 0.1187, 0.1195, 0.11992, 0.12076, 0.12217, 0.12303, 0.12422, 0.12502, 0.12734, 0.13948, 0.14117, 0.14543, 0.14749, 0.14955, 0.15224, 0.1567, 0.16501, 0.17343, 0.175, 0.18254, 0.18327, 0.18775, 0.19673, 0.19812, 0.19978, 0.20293, 0.2031, 0.2042, 0.21039, 0.22293, 0.22883, 0.23793, 0.24429, 0.25785, 0.26251, 0.26588, 0.27329, 0.27356, 0.27669, 0.28075, 0.28663, 0.29118, 0.29761, 0.31758, 0.32103, 0.32728, 0.35277, 0.35694, 0.36561, 0.38196, 0.39163, 0.39546, 0.40225, 0.40379, 0.43054, 0.44273, 0.46244, 0.47751, 0.48184, 0.48507, 0.48775, 0.53432, 0.53442, 0.53692, 0.56085, 0.57291, 0.62963, 0.64911, 0.64993, 0.67394, 0.68946, 0.69025, 0.73195, 0.7429, 0.76902, 0.7708, 0.80518, 0.80761, 0.80942, 0.81666, 0.83258, 0.85118, 0.86826, 0.91185, 0.92894, 0.99857
+
+Nmesh = 128
+# CPU time -limit
+	
+TimeLimitCPU = 5000 #<10 mins
+
+# Code options
+# Characteristics of run
+
+TimeMax = 1
+
+Omega0 = 0.2814      # Total matter density  (at z=0)
+OmegaLambda = 0.7186      # Cosmological constant (at z=0)
+OmegaBaryon = 0.0464     # Baryon density        (at z=0)
+HubbleParam = 0.697      # Hubble paramater (may be used for power spec parameterization)
+
+CoolingOn = 0
+StarformationOn = 0
+BlackHoleOn = 0
+HydroOn = 0
+DensityIndependentSphOn = 1
+#StarformationCriterion = density,h2
+#RadiationOn = 1
+MassiveNuLinRespOn = 0
+WindOn = 0
+MetalReturnOn = 0
+#MetalCoolFile = /home1/07931/plach/MP-Gadget/examples/cooling_metal_UVB
+
+# Accuracy of time integration
+MaxSizeTimestep = 0.1
+MinSizeTimestep = 0.00
+
+SnapshotWithFOF = 1
+FOFHaloLinkingLength = 0.2
+FOFHaloMinLength = 32
+
+#  Further parameters of SPH
+#DensityKernelType = quintic
+
+#DensityContrastLimit = 100   # max contrast for hydro force calculation
+#DensityResolutionEta = 1.0  # for Cubic spline 1.0 = 33
+#MaxNumNgbDeviation = 2
+#ArtBulkViscConst = 0.75
+#InitGasTemp = 580.0        # always ignored if set to 0 
+#MinGasTemp = 5.0
+
+
+# Memory allocation
+
+#PartAllocFactor = 2.0
+
+# Softening lengths
+
+#MinGasHsmlFractional = 0.01
+
+#----------------------BH Stuff-------------------------
+#BlackHoleFeedbackFactor = 0.05
+#BlackHoleFeedbackRadius = 0.
+#BlackHoleFeedbackRadiusMaxPhys = 0.
+#BlackHoleFeedbackMethod = spline | mass
+#SeedBlackHoleMass = 5.0e-5
+#BlackHoleAccretionFactor = 100.0
+#BlackHoleNgbFactor = 2.0
+#BlackHoleEddingtonFactor = 3.0
+
+#MinFoFMassForNewSeed = 5
+#TimeBetweenSeedingSearch 1.05
+
+#----------------------SFR Stuff-------------------------
+
+#CritPhysDensity = 0       #  critical physical density for star formation in
+#  hydrogen number density in cm^(-3)
+
+#CritOverDensity = 57.7   #  overdensity threshold value
+
+#QuickLymanAlphaProbability  0 # Set to 1.0 to turn dense gas directly into stars.
+
+#MaxSfrTimescale = 1.5     # in internal time units
+
+
+#TempSupernova = 1.0e8   #  in Kelvin
+
+#TempClouds = 1000.0   #  in Kelvin
+#FactorSN = 0.1
+#FactorEVP = 1000.0
+
+#WindModel = ofjt10,decouple
+#WindEfficiency = 2.0
+#WindEnergyFraction = 1.0
+#WindSigma0 = 353.0 #km/s
+#WindSpeedFactor = 3.7
+
+#WindFreeTravelLength = 20
+#WindFreeTravelDensFac = 0.1
+
